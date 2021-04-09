@@ -530,6 +530,7 @@ export class HomeFragment extends Component {
   uploadImages = (images, index, urls, onCompleted) => {
     const uploadAgain = (images, index, urls, onCompleted) =>
       this.uploadImages(images, index, urls, onCompleted);
+
     let file = images[index];
     try {
       if (file.startsWith("https")) {
@@ -775,7 +776,7 @@ export class HomeFragment extends Component {
                                   price: document.data()["product_price"],
                                 };
                                 productsData.push(productData);
-                                if (index == item.products.length - 1) {
+                                if (index === item.products.length - 1) {
                                   item.products = productsData;
                                   item["loaded"] = true;
                                   this.setState({});

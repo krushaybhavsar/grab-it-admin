@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Button, Container } from "@material-ui/core";
+import { Button, Container, TextField } from "@material-ui/core";
 import MaterialTable from "material-table";
 import { forwardRef } from "react";
 
@@ -20,7 +20,12 @@ import Search from "@material-ui/icons/Search";
 import ViewColumn from "@material-ui/icons/ViewColumn";
 import { connect } from "react-redux";
 import { firestore, storageRef } from "../firebase";
-import { addCategory } from "../Components/Actions/categoryActions";
+import {
+  addCategory,
+  deleteCategory,
+  updateCategory,
+} from "../Components/Actions/categoryActions";
+import { Home } from "@material-ui/icons";
 
 const tableIcons = {
   Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
@@ -53,45 +58,63 @@ class ManageCategoryFragment extends Component {
     this.state = {
       columns: [
         { title: "Index", field: "index", type: "numeric" },
-        { title: "Category", field: "categoryName" },
+        {
+          title: "Category",
+          field: "categoryName",
+          editable: "onAdd",
+        },
         {
           title: "Icon",
           field: "icon",
-          editComponent: (props) => (
-            <>
-              <input
-                accept="image/*"
-                id="contained-button-file"
-                onChange={(e) => {
-                  if (e.target.files && e.target.files[0]) {
-                    this.setState({
-                      image: e.target.files[0],
-                    });
-                    props.onChange(e.target.value);
-                    e.target.value = null;
-                  }
-                }}
-                hidden
-                name="image"
-                type="file"
-              />
-              <label htmlFor="contained-button-file">
-                {this.state.image ? (
-                  <img
-                    src={this.renderImageUrl(this.state.image)}
-                    style={{ width: 25, height: 25 }}
-                  />
-                ) : (
-                  <Button variant="contained" color="primary" component="span">
-                    Add Image
-                  </Button>
-                )}
-              </label>
-            </>
-          ),
-          render: (rowData) => (
-            <img src={rowData.icon} style={{ width: 25, height: 25 }} />
-          ),
+          editComponent: (props) =>
+            props.value === "null" ? (
+              <Home />
+            ) : (
+              <>
+                <input
+                  accept="image/*"
+                  id="contained-button-file"
+                  onChange={(e) => {
+                    if (e.target.files && e.target.files[0]) {
+                      this.setState({
+                        image: e.target.files[0],
+                      });
+                      props.onChange(e.target.value);
+                      e.target.value = null;
+                    }
+                  }}
+                  hidden
+                  name="image"
+                  type="file"
+                />
+                <label htmlFor="contained-button-file">
+                  {this.state.image || props.value ? (
+                    <img
+                      src={
+                        this.state.image
+                          ? this.renderImageUrl(this.state.image)
+                          : props.value
+                      }
+                      style={{ width: 25, height: 25 }}
+                    />
+                  ) : (
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      component="span"
+                    >
+                      Add Image
+                    </Button>
+                  )}
+                </label>
+              </>
+            ),
+          render: (rowData) =>
+            rowData.icon === "null" ? (
+              <Home />
+            ) : (
+              <img src={rowData.icon} style={{ width: 25, height: 25 }} />
+            ),
         },
       ],
     };
@@ -144,6 +167,23 @@ class ManageCategoryFragment extends Component {
     }
   };
 
+  deleteImage = (image, onComplete) => {
+    let splitted_link = image.split("/");
+    let name = splitted_link[splitted_link.length - 1]
+      .split("?")[0]
+      .replace("banners%2F", "");
+
+    storageRef
+      .child("categories/" + name)
+      .delete()
+      .then(() => {
+        onComplete(true);
+      })
+      .catch((err) => {
+        onComplete(false);
+      });
+  };
+
   render() {
     return (
       <div>
@@ -174,27 +214,44 @@ class ManageCategoryFragment extends Component {
                 }),
               onRowUpdate: (newData, oldData) =>
                 new Promise((resolve) => {
-                  setTimeout(() => {
+                  if (
+                    newData.index === oldData.index &&
+                    newData.icon === oldData.icon
+                  ) {
                     resolve();
-                    if (oldData) {
-                      this.setState((prevState) => {
-                        const data = [...prevState.data];
-                        data[data.indexOf(oldData)] = newData;
-                        return { ...prevState, data };
-                      });
-                    }
-                  }, 600);
+                    this.setState({
+                      image: null,
+                    });
+                  } else if (newData.icon === oldData.icon) {
+                    this.props.updateCategory(
+                      newData,
+                      () => resolve(),
+                      (error) => resolve()
+                    );
+                  } else {
+                    this.deleteImage(oldData.icon, (success) => {
+                      if (success) {
+                        this.uploadImage((url) => {
+                          newData["icon"] = url;
+                          this.props.updateCategory(
+                            newData,
+                            () => resolve(),
+                            (error) => resolve()
+                          );
+                        });
+                      } else {
+                        resolve();
+                      }
+                    });
+                  }
                 }),
               onRowDelete: (oldData) =>
                 new Promise((resolve) => {
-                  setTimeout(() => {
-                    resolve();
-                    this.setState((prevState) => {
-                      const data = [...prevState.data];
-                      data.splice(data.indexOf(oldData), 1);
-                      return { ...prevState, data };
-                    });
-                  }, 600);
+                  this.props.deleteCategory(
+                    oldData.categoryName,
+                    () => resolve(),
+                    (error) => resolve()
+                  );
                 }),
             }}
           />
@@ -214,6 +271,10 @@ const mapDispatchToProps = (dispatch) => {
   return {
     addCategory: (data, onSuccess, onError) =>
       dispatch(addCategory(data, onSuccess, onError)),
+    deleteCategory: (data, onSuccess, onError) =>
+      dispatch(deleteCategory(data, onSuccess, onError)),
+    updateCategory: (data, onSuccess, onError) =>
+      dispatch(updateCategory(data, onSuccess, onError)),
   };
 };
 
