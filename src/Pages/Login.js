@@ -7,7 +7,7 @@ import {
   CircularProgress,
   Button,
 } from "@material-ui/core";
-import logo from "../media/logo.png";
+import logoWord from "../media/logoWord.png";
 import { firebaseAuth, firestore } from "../firebase";
 
 class Login extends Component {
@@ -66,14 +66,14 @@ class Login extends Component {
               })
               .catch((err) => {
                 if (err.code === "auth/wrong-password") {
-                  this.state.password_error = "Incorrect Password!";
+                  this.state.password_error = "Incorrect Password";
                 }
                 this.setState({
                   show_progress: false,
                 });
               });
           } else {
-            this.state.email_error = "Not Allowed!";
+            this.state.email_error = "Permission Denied";
             this.setState({
               show_progress: false,
             });
@@ -84,64 +84,72 @@ class Login extends Component {
 
   render() {
     return (
-      <Container maxWidth="xs">
-        <Box
-          bgcolor="white"
-          boxShadow="2"
-          borderRadius="12px"
-          textAlign="center"
-          p="24px"
-          mt="50px"
-        >
-          <img src={logo} height="50px" />
-          <Typography variant="h5" color="textSecondary">
-            Admin
-          </Typography>
-          <br />
-          <TextField
-            label="Email"
-            id="outlined-size-small"
-            variant="outlined"
-            fullWidth
-            name="email"
-            error={this.state.email_error != null}
-            helperText={this.state.email_error}
-            onChange={this.handleChange}
-            color="primary"
-            margin="normal"
-            size="small"
-          />
-          <TextField
-            label="Password"
-            id="outlined-size-small"
-            type="password"
-            name="password"
-            onChange={this.handleChange}
-            error={this.state.password_error != null}
-            helperText={this.state.password_error}
-            variant="outlined"
-            fullWidth
-            margin="normal"
-            size="small"
-          />
-          <br />
-          <br />
-          {this.state.show_progress ? (
-            <CircularProgress size={24} thickness={4} color="primary" />
-          ) : null}
-          <br />
-          <br />
-          <Button
-            disableElevation
-            variant="contained"
-            onClick={this.login}
-            color="primary"
-            fullWidth
+      <div
+        style={{
+          backgroundColor: "#194B96",
+          height: "100vh",
+          overflow: "hidden",
+          textAlign: "center",
+        }}
+      >
+        <img src={logoWord} height="60px" style={{ marginTop: 90 }} />
+        <Container maxWidth="xs">
+          <Box
+            bgcolor="white"
+            boxShadow="2"
+            borderRadius="12px"
+            textAlign="center"
+            p="24px"
+            mt="70px"
           >
-            LOGIN
-          </Button>
-        </Box>
-      </Container>
+            {/* <Typography variant="h5" color="textSecondary">
+              Grab It Admin Panel
+            </Typography> */}
+            <TextField
+              label="Authorized Email"
+              id="outlined-size-small"
+              variant="outlined"
+              fullWidth
+              name="email"
+              error={this.state.email_error != null}
+              helperText={this.state.email_error}
+              onChange={this.handleChange}
+              color="primary"
+              margin="normal"
+              size="small"
+            />
+            <TextField
+              label="Password"
+              id="outlined-size-small"
+              type="password"
+              name="password"
+              onChange={this.handleChange}
+              error={this.state.password_error != null}
+              helperText={this.state.password_error}
+              variant="outlined"
+              fullWidth
+              margin="normal"
+              size="small"
+            />
+            <br />
+            <br />
+            {this.state.show_progress ? (
+              <CircularProgress size={24} thickness={4} color="primary" />
+            ) : null}
+            <br />
+            <br />
+            <Button
+              disableElevation
+              variant="contained"
+              onClick={this.login}
+              color="primary"
+              fullWidth
+            >
+              LOGIN
+            </Button>
+          </Box>
+        </Container>
+      </div>
     );
   }
 }
