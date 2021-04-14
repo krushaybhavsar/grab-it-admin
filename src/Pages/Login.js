@@ -7,7 +7,7 @@ import {
   CircularProgress,
   Button,
 } from "@material-ui/core";
-import logoWord from "../media/logoWord.png";
+import loginLogo from "../media/loginLogo.png";
 import { firebaseAuth, firestore } from "../firebase";
 
 class Login extends Component {
@@ -92,7 +92,7 @@ class Login extends Component {
           textAlign: "center",
         }}
       >
-        <img src={logoWord} height="60px" style={{ marginTop: 90 }} />
+        <img src={loginLogo} width="100%" style={{ marginTop: 90 }} />
         <Container maxWidth="xs">
           <Box
             bgcolor="white"

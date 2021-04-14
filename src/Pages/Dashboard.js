@@ -17,10 +17,13 @@ import {
   ShoppingCart,
   Settings,
   ExitToApp,
+  PinDropSharp,
 } from "@material-ui/icons";
 import logoWord from "../media/logoWord.png";
 import HomeFragment from "../Fragments/HomeFragment";
 import ManageCategoryFragment from "../Fragments/ManageCategoryFragment";
+import { signOut } from "../Components/Actions/authActions";
+import LogOutFragment from "../Fragments/LogOutFragment";
 
 const drawerWidth = 240;
 
@@ -47,6 +50,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const mapDispatchToProps = (dispatch) => {
+  return {
+    signOut: () => dispatch(signOut()),
+  };
+};
+
 export default function ClippedDrawer() {
   const classes = useStyles();
   const [fragment, setfragment] = useState("HOME");
@@ -56,6 +65,8 @@ export default function ClippedDrawer() {
         return <HomeFragment />;
       case "MANAGE_CATEGORY":
         return <ManageCategoryFragment />;
+      case "LOG_OUT":
+        return <LogOutFragment />;
       default:
         break;
     }
@@ -91,39 +102,44 @@ export default function ClippedDrawer() {
               </ListItemIcon>
               <ListItemText primary="Home" />
             </ListItem>
+
             <ListItem button onClick={(e) => setfragment("MANAGE_CATEGORY")}>
               <ListItemIcon>
                 <Category />
               </ListItemIcon>
               <ListItemText primary="Categories" />
             </ListItem>
+
             <ListItem button>
               <ListItemIcon>
                 <Phonelink />
               </ListItemIcon>
               <ListItemText primary="Products" />
             </ListItem>
+
             <ListItem button>
               <ListItemIcon>
                 <ShoppingCart />
               </ListItemIcon>
               <ListItemText primary="Orders" />
             </ListItem>
+
             <ListItem button>
               <ListItemIcon>
                 <Settings />
               </ListItemIcon>
               <ListItemText primary="Settings" />
             </ListItem>
+
             <Divider />
-            <ListItem button>
+
+            <ListItem button onClick={(e) => setfragment("LOG_OUT")}>
               <ListItemIcon>
                 <ExitToApp />
               </ListItemIcon>
               <ListItemText primary="Logout" />
             </ListItem>
           </List>
-          {/* <Divider /> */}
         </div>
       </Drawer>
       <main className={classes.content}>
