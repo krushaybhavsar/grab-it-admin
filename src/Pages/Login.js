@@ -93,7 +93,7 @@ class Login extends Component {
           textAlign: "center",
         }}
       >
-        <img src={loginLogo} />
+        <img src={loginLogo} className="loginImgs" />
         <Container maxWidth="xs">
           <Box
             bgcolor="white"

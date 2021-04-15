@@ -3,28 +3,28 @@
 }
 
 @media screen and (max-width: 2000px) {
-  img {
+  .loginImgs {
     width: 40%;
     padding-top: 10%;
   }
 }
 
 @media screen and (max-width: 900px) {
-  img {
+  .loginImgs {
     width: 60%;
     padding-top: 20%;
   }
 }
 
 @media screen and (max-width: 700px) {
-  img {
+  .loginImgs {
     width: 80%;
     padding-top: 25%;
   }
 }
 
 @media screen and (max-width: 500px) {
-  img {
+  .loginImgs {
     width: 90%;
     padding-top: 35%;
   }
